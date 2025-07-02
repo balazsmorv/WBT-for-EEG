@@ -96,12 +96,13 @@ if __name__ == "__main__":
                     X_test = np.stack(test_set)
                     y_test = test_labels
 
-                    # X_trains = X_trains[(y_trains == 0) + (y_trains == 1)]
-                    # train_subjects = train_subjects[(y_trains == 0) + (y_trains == 1)]
-                    # y_trains = y_trains[(y_trains == 0) + (y_trains == 1)]
-                    #
-                    # X_test = X_test[(y_test == 0) + (y_test == 1)]
-                    # y_test = y_test[(y_test == 0) + (y_test == 1)]
+                    if dataset_name == "BCICa" and args.two_class:
+                        X_trains = X_trains[(y_trains == 0) + (y_trains == 1)]
+                        train_subjects = train_subjects[(y_trains == 0) + (y_trains == 1)]
+                        y_trains = y_trains[(y_trains == 0) + (y_trains == 1)]
+
+                        X_test = X_test[(y_test == 0) + (y_test == 1)]
+                        y_test = y_test[(y_test == 0) + (y_test == 1)]
 
                     if dataset_name == "VEPESS":
                         nfilter = [8]  # , 12, 16]
@@ -265,7 +266,10 @@ if __name__ == "__main__":
                         bary_reg = [5e-2]
                     else:
                         laplace_reg = [0.1, 1.0, 10]
-                        bary_reg = [0.2]
+                        if len(np.unique(y_trains)) == 2: # BCICb and BCICa 2-class
+                            bary_reg = [2e-2]
+                        else:
+                            bary_reg = [0.2]
                     laplace_similarity = [10, 20, 30]
                     laplace_reg_type = ["disp"]
                     laplace_alpha = [0.5]

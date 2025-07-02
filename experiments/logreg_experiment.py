@@ -89,12 +89,13 @@ if __name__ == "__main__":
                 X_test = np.stack(test_set)
                 y_test = test_labels
 
-                # X_trains = X_trains[(y_trains == 0) + (y_trains == 1)]
-                # train_subjects = train_subjects[(y_trains == 0) + (y_trains == 1)]
-                # y_trains = y_trains[(y_trains == 0) + (y_trains == 1)]
-                #
-                # X_test = X_test[(y_test == 0) + (y_test == 1)]
-                # y_test = y_test[(y_test == 0) + (y_test == 1)]
+                if dataset_name == "BCICa" and args.two_class:
+                    X_trains = X_trains[(y_trains == 0) + (y_trains == 1)]
+                    train_subjects = train_subjects[(y_trains == 0) + (y_trains == 1)]
+                    y_trains = y_trains[(y_trains == 0) + (y_trains == 1)]
+
+                    X_test = X_test[(y_test == 0) + (y_test == 1)]
+                    y_test = y_test[(y_test == 0) + (y_test == 1)]
 
                 penalty = [None, "l1", "l2", "elasticnet"]
                 solver = ["saga"]  # "lbfgs", "sag", "saga"]

@@ -17,6 +17,11 @@ def get_args_parser():
         choices=["VEPESS", "BCICa", "BCICb", "SEED"],
     )
     parser.add_argument(
+        "--two_class",
+        action="store_true",
+        help="""Whether to use two-class or four-class with the BCIC IV IIa dataset.""",
+    )
+    parser.add_argument(
         "--bary_solver_numitermax",
         default=10e10,
         type=float,
