@@ -13,9 +13,9 @@ mlflow.set_tracking_uri(uri="http://127.0.0.1:8080")
 To reproduce our results, run the corresponding experiments, like: 
 
 ``` shell
-python experiments/{svm, lda, logreg}_experiment.py --dataset_name {"VEPESS", "BCICa", "BCICb"} --data_path "path_to_dataset"
+python {svm, lda, logreg, nn}_experiment.py --dataset_name {"VEPESS", "BCICa", "BCICb"} --data_path "path_to_dataset"
 ```
 
-To perform binary classification on the BCICa dataset, also add the `--two-class` flat to the command. 
+To perform binary classification on the BCICa dataset, in each experiment, remove the commenting #-s in the code where we filter for binary labels.
 
 
