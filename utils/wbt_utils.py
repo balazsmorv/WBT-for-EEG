@@ -1,10 +1,6 @@
-# This file is adapted from an external source:
-# Original repository: https://github.com/eddardd/WBTransport
-# All credit goes to the original authors.
-# Changes may have been made to fit our use case.
-
 import numpy as np
 import ot
+import torch
 
 def bar_zeros_initializer(Xs, ys):
     r"""Initializes the barycenter support as zeros.

@@ -1,8 +1,6 @@
 import datetime
 import itertools
 import os
-import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import random
 
 import matplotlib.pyplot as plt
@@ -29,8 +27,7 @@ from sklearn.pipeline import make_pipeline
 
 from utils.args_parser import get_args_parser
 from data.dataloader import OddOneOutSignalDataLoader
-from utils.visualization_utils import plot_pca_for_arrays
-from utils.utils import generate_combinations, get_transport
+from util_fns import generate_combinations, get_transport
 
 mlflow.set_tracking_uri(uri="http://127.0.0.1:8080")
 # To setup an mlflow server: mlflow server --host 127.0.0.1 --port 8080
@@ -87,13 +84,12 @@ if __name__ == "__main__":
                     X_test = np.stack(test_set)
                     y_test = test_labels
 
-                    if dataset_name == "BCICa" and args.two_class:
-                        X_trains = X_trains[(y_trains == 0) + (y_trains == 1)]
-                        train_subjects = train_subjects[(y_trains == 0) + (y_trains == 1)]
-                        y_trains = y_trains[(y_trains == 0) + (y_trains == 1)]
-
-                        X_test = X_test[(y_test == 0) + (y_test == 1)]
-                        y_test = y_test[(y_test == 0) + (y_test == 1)]
+                    # X_trains = X_trains[(y_trains == 0) + (y_trains == 1)]
+                    # train_subjects = train_subjects[(y_trains == 0) + (y_trains == 1)]
+                    # y_trains = y_trains[(y_trains == 0) + (y_trains == 1)]
+                    #
+                    # X_test = X_test[(y_test == 0) + (y_test == 1)]
+                    # y_test = y_test[(y_test == 0) + (y_test == 1)]
 
                     lda_solver = ["svd"]  # , "lsqr", "eigen"]
                     lda_shrinkage = [None]  # , "auto"]
@@ -358,12 +354,12 @@ if __name__ == "__main__":
                         y_test, model.decision_function(Xt), pos_label=1
                     )
                     mlflow.log_figure(roc.figure_, "OT_roc.png")
-                bary_plot = plot_pca_for_arrays(
-                    arrays=[transport.Xbar, transport.transform(Xs), Xt],
-                    n_components=3 if len(np.unique(y_trains)) > 2 else 2,
-                    labels=[y_trains, y_trains, y_test],
-                )
-                mlflow.log_figure(bary_plot, "PCA.png")
+                # bary_plot = plot_pca_for_arrays3(
+                #     arrays=[transport.Xbar, transport.transform(Xs), Xt],
+                #     n_components=3 if len(np.unique(y_trains)) > 2 else 2,
+                #     labels=[y_trains, y_trains, y_test],
+                # )
+                # mlflow.log_figure(bary_plot, "PCA.png")
                 metrics = {
                     "OT BA": balanced_accuracy_score(y_test, y_pred),
                     "OT accuracy": accuracy_score(y_test, y_pred),

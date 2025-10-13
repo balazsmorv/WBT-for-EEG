@@ -1,21 +1,17 @@
-# This file is adapted from an external source:
-# Original repository: https://github.com/eddardd/WBTransport
-# All credit goes to the original authors.
-# Changes may have been made to fit our use case.
-
 import ot
 import time
 import numpy as np
 from ot.bregman import sinkhorn
 from utils.wbt_utils import barycentric_mapping
 from utils.wbt_utils import semisupervised_penalty
+
 from utils.ot_gpu import sinkhorn_gpu
 
 
 def sinkhorn_barycenter(mu_s, Xs, Xbar, ys=None, ybar=None, reg=1e-3, b=None, weights=None,
-                        norm="max", metric="sqeuclidean", numItermax=100,
+                        method="sinkhorn", norm="max", metric="sqeuclidean", numItermax=100,
                         numInnerItermax=1000, stopThr=1e-4, verbose=False, innerVerbose=False,
-                        log=False, limit_max=np.inf, callbacks=None,
+                        log=False, line_search=False, limit_max=np.inf, callbacks=None,
                         implementation='torch', device='cpu', **kwargs):
     r"""Compute the entropic regularized Wasserstein barycenter of distributions
     in :math:`\mu_{s}`. This function solves the follwing optimization problem:
@@ -117,7 +113,14 @@ def sinkhorn_barycenter(mu_s, Xs, Xbar, ys=None, ybar=None, reg=1e-3, b=None, we
             wi * barycentric_mapping(Xt=Xsi, coupling=Ti) for wi, Ti, Xsi in zip(weights, transport_plans, Xs)
         ])
 
-        alpha = 1.0
+        if line_search:
+            alpha = naive_line_search(_barycenter_cost, Xbar, T_sum, args=(Xs, b, transport_plans), max_iter=21,
+                                      verbose=verbose)
+
+            if verbose:
+                print("Alpha determined through line search: {}".format(alpha))
+        else:
+            alpha = 1.0
 
         Xbar = (1 - alpha) * Xbar + alpha * T_sum
         #displacement = np.sum(np.square(Xbar - old_Xbar))

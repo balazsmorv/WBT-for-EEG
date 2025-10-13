@@ -1,8 +1,6 @@
 import datetime
 import itertools
 import os
-import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import random
 
 import matplotlib.pyplot as plt
@@ -30,8 +28,8 @@ from sklearn.svm import SVC
 
 from utils.args_parser import get_args_parser
 from data.dataloader import OddOneOutSignalDataLoader
-from utils.visualization_utils import plot_pca_for_arrays, plot_pca_comparisons
-from utils.utils import (
+from utils.visualization_utils import plot_pca_for_arrays3, plot_pca_comparisons
+from util_fns import (
     generate_combinations,
     get_transport,
 )
@@ -83,7 +81,7 @@ if __name__ == "__main__":
                     ) = dataloader.get_folds(
                         test_subjects=(
                             int(subject)
-                            if dataset_name in ["VEPESS"]
+                            if dataset_name in ["VEPESS", "SEED"]
                             else subject
                         ),
                         standardize_by="subject",
@@ -96,13 +94,12 @@ if __name__ == "__main__":
                     X_test = np.stack(test_set)
                     y_test = test_labels
 
-                    if dataset_name == "BCICa" and args.two_class:
-                        X_trains = X_trains[(y_trains == 0) + (y_trains == 1)]
-                        train_subjects = train_subjects[(y_trains == 0) + (y_trains == 1)]
-                        y_trains = y_trains[(y_trains == 0) + (y_trains == 1)]
-
-                        X_test = X_test[(y_test == 0) + (y_test == 1)]
-                        y_test = y_test[(y_test == 0) + (y_test == 1)]
+                    # X_trains = X_trains[(y_trains == 0) + (y_trains == 1)]
+                    # train_subjects = train_subjects[(y_trains == 0) + (y_trains == 1)]
+                    # y_trains = y_trains[(y_trains == 0) + (y_trains == 1)]
+                    #
+                    # X_test = X_test[(y_test == 0) + (y_test == 1)]
+                    # y_test = y_test[(y_test == 0) + (y_test == 1)]
 
                     if dataset_name == "VEPESS":
                         nfilter = [8]  # , 12, 16]
@@ -136,6 +133,15 @@ if __name__ == "__main__":
                                 "svc__gamma": gammas,
                                 "svc__kernel": kernel,
                             }
+                    elif dataset_name == "SEED":
+                        c = [0.001, 0.01, 0.1, 1.0, 10.0, 100.0]
+                        gammas = ["scale"]
+                        kernel = ["linear"]
+                        param_grid = {
+                            "onevsrestclassifier__estimator__C": c,
+                            "onevsrestclassifier__estimator__gamma": gammas,
+                            "onevsrestclassifier__estimator__kernel": kernel,
+                        }
 
                     # Classifier without OT to search parameters
                     combinations = generate_combinations(param_grid)
@@ -179,7 +185,19 @@ if __name__ == "__main__":
                                 )
                             ),
                         )
-
+                    elif dataset_name == "SEED":
+                        estimator = make_pipeline(
+                            FunctionTransformer(np.mean, kw_args={"axis": 1}),
+                            StandardScaler(),
+                            OneVsRestClassifier(
+                                SVC(
+                                    class_weight="balanced",
+                                    probability=True,
+                                    max_iter=10000,
+                                    verbose=False,
+                                )
+                            ),
+                        )
 
                     model = GridSearchCV(
                         estimator,
@@ -266,10 +284,7 @@ if __name__ == "__main__":
                         bary_reg = [5e-2]
                     else:
                         laplace_reg = [0.1, 1.0, 10]
-                        if len(np.unique(y_trains)) == 2: # BCICb and BCICa 2-class
-                            bary_reg = [2e-2]
-                        else:
-                            bary_reg = [0.2]
+                        bary_reg = [0.2]
                     laplace_similarity = [10, 20, 30]
                     laplace_reg_type = ["disp"]
                     laplace_alpha = [0.5]
@@ -413,7 +428,7 @@ if __name__ == "__main__":
                         )
                         mlflow.log_figure(roc.figure_, "OT_roc.png")
 
-                    bary_plot = plot_pca_for_arrays(
+                    bary_plot = plot_pca_for_arrays3(
                         arrays=[transport.Xbar, transported_source, Xt],
                         n_components=2,
                         labels=[y_trains, y_trains, y_test],

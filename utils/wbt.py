@@ -1,14 +1,10 @@
-# This file is adapted from an external source:
-# Original repository: https://github.com/eddardd/WBTransport
-# All credit goes to the original authors.
-# Changes may have been made to fit our use case.
-
 import numpy as np
+
 from ot.utils import unif
 from ot.da import SinkhornTransport
 
 from utils.wbt_barycenters import sinkhorn_barycenter
-from utils.wbt_utils import ferradans_mapping, bar_zeros_initializer, bar_random_initializer, bar_random_cls_initializer
+from utils.wbt_utils import ferradans_mapping, barycentric_mapping, bar_zeros_initializer, bar_random_initializer, bar_random_cls_initializer
 
 class WassersteinBarycenterTransport:
     r"""Multi-source domain adaptation using Wasserstein barycenters. This class is intended
