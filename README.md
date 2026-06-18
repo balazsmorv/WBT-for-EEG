@@ -18,4 +18,20 @@ python {svm, lda, logreg, nn}_experiment.py --dataset_name {"VEPESS", "BCICa", "
 
 To perform binary classification on the BCICa dataset, in each experiment, remove the commenting #-s in the code where we filter for binary labels.
 
+## Cite the article
+If you found this repository useful, please cite the original article:
 
+```
+@article{MORVAY2026108892,
+  title = {Enhancing multi-paradigm EEG signal classification in cross-subject settings using optimal transport},
+  journal = {Biomedical Signal Processing and Control},
+  volume = {113},
+  pages = {108892},
+  year = {2026},
+  issn = {1746-8094},
+  doi = {https://doi.org/10.1016/j.bspc.2025.108892},
+  url = {https://www.sciencedirect.com/science/article/pii/S174680942501403X},
+  author = {Balázs Tibor Morvay and Szabolcs Torma and József Pitrik and Luca Szegletes},
+  keywords = {Electroencephalography, Cross-subject classification, Machine learning, Optimal transport, Domain adaptation},
+}
+```
